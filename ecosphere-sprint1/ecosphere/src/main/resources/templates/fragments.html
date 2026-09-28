@@ -1,0 +1,10 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(t)"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title th:text="${t}+' | EcoSphere'">EcoSphere</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body><nav th:fragment="topbar" th:if="${me}" class="d-flex align-items-center px-4 py-2 bg-white border-bottom">
+<b class="brand me-4 fs-5">🌿 EcoSphere</b><span class="pill" th:text="${me.role}"></span>
+<div class="ms-4 d-flex gap-3" th:if="${me.role=='USER'}"><a th:href="@{/user}" class="small text-decoration-none fw-semibold text-dark">Dashboard</a>
+</div>
+<div class="ms-auto d-flex align-items-center gap-3"><span class="pill" th:text="${me.ecoPoints}+' pts • Score '+${me.greenScore}"></span>
+<div class="text-end small lh-sm"><b th:text="${me.name}"></b><br><span class="text-muted" th:text="${me.email}"></span></div>
+<form th:action="@{/logout}" method="post"><button class="btn btn-sm btn-outline-success">Logout</button></form></div></nav></body></html>
