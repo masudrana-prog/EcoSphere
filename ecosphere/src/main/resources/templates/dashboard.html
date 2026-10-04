@@ -1,5 +1,0 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Dashboard')}"></head>
-<body><nav th:replace="~{fragments :: topbar}"></nav>
-<div class="p-3 container-xl"><div class="hero-card mb-3"><span class="tag" th:text="${me.role}"></span>
-<h2 class="fw-bold mb-0 mt-1" th:text="'Welcome, '+${me.name}"></h2><small th:text="${me.email}+' • '+${me.status}"></small></div>
-<div class="card-e"><h5 class="fw-bold">Signed in successfully ✅</h5><p class="text-muted mb-0" th:text="${msg}"></p></div></div></body></html>
