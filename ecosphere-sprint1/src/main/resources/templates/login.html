@@ -1,0 +1,27 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Login')}"></head>
+<body><div class="row g-0 auth">
+<div class="col-lg-5 hero d-none d-lg-block"><h5>🌿 EcoSphere</h5><small class="opacity-75">SMART TREE PLANTATION, MONITORING &amp; SUSTAINABILITY PLATFORM</small>
+<h1 class="fw-bold mt-5">Plant. Track. Verify.<br>Make an Impact.</h1><p class="opacity-75">Connecting users, nurseries, NGOs, and administrators to make tree plantation more organized, trackable, and reliable.</p>
+<div class="row g-3 mt-3"><div class="col-6"><div class="stat"><small>Monthly Impact</small><b>18.5 Tons</b>Carbon Footprint</div></div><div class="col-6"><div class="stat"><small>GPS Tagged</small><b>1280+</b>Tree Plantations</div></div>
+<div class="col-6"><div class="stat"><small>Partner NGOs</small><b>50+</b>Verified NGOs</div></div><div class="col-6"><div class="stat"><small>Active Nurseries</small><b>120+</b>Sapling Available</div></div></div>
+<p class="fst-italic mt-5 opacity-75">“Plant today. Track your impact. Grow a greener future”.</p></div>
+<div class="col-lg-7 d-flex align-items-center justify-content-center p-4"><div style="max-width:480px;width:100%">
+<h2 class="fw-bold">Portal Access</h2><p class="text-muted">Authenticate to access your EcoSphere Portal</p>
+<div class="alert alert-danger" th:if="${param.error}">Invalid credentials, or your account is not active / still pending admin approval.</div>
+<div class="alert alert-success" th:if="${param.registered}" th:text="${param.pending}?'Registered! An admin must approve your account before you can log in.':'Account created. Please log in.'"></div>
+<div class="alert alert-info" th:if="${param.logout}">You have been logged out.</div>
+<div class="lbl mb-1">Select participant role</div>
+<div class="d-flex gap-1 p-1 rounded mb-3" style="background:var(--soft)" id="tabs">
+<button type="button" class="btn btn-sm flex-fill role-tab active" data-h="General User — calculate footprint, view dashboard, earn EcoPoints">User</button>
+<button type="button" class="btn btn-sm flex-fill role-tab" data-h="NGO Org — review and verify plantation submissions">NGO Org</button>
+<button type="button" class="btn btn-sm flex-fill role-tab" data-h="Nursery — manage trees, saplings and stock">Nursery</button>
+<button type="button" class="btn btn-sm flex-fill role-tab" data-h="Admin — manage users, organisations and system rules">Admin</button></div>
+<div class="card-e mb-3 py-2 small" id="hint">General User — calculate footprint, view dashboard, earn EcoPoints</div>
+<form th:action="@{/login}" method="post">
+<label class="fw-semibold small">Email Address</label><input name="email" type="email" class="form-control mb-3" required>
+<label class="fw-semibold small">Password</label><input name="password" type="password" class="form-control mb-3" required>
+<button class="btn btn-eco w-100 py-2">Log In</button></form>
+<div class="card-e mt-3 text-center small">Don't have an account? <a th:href="@{/register}" class="text-success fw-bold">Create an account</a></div>
+
+</div></div></div>
+<script>document.querySelectorAll('.role-tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.role-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('hint').textContent=b.dataset.h;});</script></body></html>

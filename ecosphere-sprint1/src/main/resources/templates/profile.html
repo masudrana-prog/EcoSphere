@@ -1,0 +1,19 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Profile')}"></head>
+<body><nav th:replace="~{fragments :: topbar}"></nav><div th:replace="~{fragments :: flash}"></div>
+<div class="p-3 container-xl"><div class="hero-card mb-3"><span class="tag" th:text="${profile.role}"></span><h2 class="fw-bold mb-0 mt-1" th:text="${profile.name}"></h2><small th:text="${profile.email}+' • '+${profile.status}"></small></div>
+<div class="row g-3"><div class="col-lg-8"><div class="card-e"><h5 class="fw-bold">Edit Profile</h5>
+<form th:action="@{/profile}" method="post"><div class="row g-2">
+<div class="col-md-6"><label class="small fw-semibold">Name</label><input name="name" class="form-control" th:value="${profile.name}" required></div>
+<div class="col-md-6"><label class="small fw-semibold">Phone</label><input name="phone" class="form-control" th:value="${profile.phone}" required></div>
+<div class="col-md-6"><label class="small fw-semibold">Location</label><input name="location" class="form-control" th:value="${profile.location}"></div>
+<div class="col-md-6"><label class="small fw-semibold">Address</label><input name="address" class="form-control" th:value="${profile.address}"></div>
+<div class="col-md-6" th:if="${profile.role!='USER'}"><label class="small fw-semibold">Organisation</label><input name="organizationName" class="form-control" th:value="${profile.organizationName}"></div>
+<div class="col-md-6" th:if="${profile.role!='USER'}"><label class="small fw-semibold">Registration No.</label><input name="registrationNo" class="form-control" th:value="${profile.registrationNo}"></div>
+<div class="col-md-6" th:if="${profile.role=='ADMIN'}"><label class="small fw-semibold">Department</label><input name="adminDepartment" class="form-control" th:value="${profile.adminDepartment}"></div>
+<div class="col-md-6"><label class="small fw-semibold">Website</label><input name="website" class="form-control" th:value="${profile.website}"></div>
+<div class="col-12"><label class="small fw-semibold">Bio</label><textarea name="bio" rows="3" maxlength="1000" class="form-control" th:text="${profile.bio}"></textarea></div></div>
+<button class="btn btn-eco mt-3">Save changes</button></form></div></div>
+<div class="col-lg-4"><div class="card-e mb-3"><h5 class="fw-bold">Profile Photo</h5><img class="thumb mb-2" th:if="${profile.profileImageUrl}" th:src="@{${profile.profileImageUrl}}">
+<form th:action="@{/profile/photo}" method="post" enctype="multipart/form-data"><input type="file" name="photo" accept="image/*" class="form-control mb-2" required><button class="btn btn-sm btn-outline-success">Upload</button></form></div>
+<div class="card-e"><h5 class="fw-bold">Change Password</h5><form th:action="@{/profile/password}" method="post"><input type="password" name="current" class="form-control mb-2" placeholder="Current password" required>
+<input type="password" name="next" minlength="8" class="form-control mb-2" placeholder="New password" required><input type="password" name="confirm" minlength="8" class="form-control mb-2" placeholder="Confirm new password" required><button class="btn btn-eco w-100">Update password</button></form></div></div></div></div></body></html>
