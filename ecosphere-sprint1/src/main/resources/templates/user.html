@@ -1,0 +1,33 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Dashboard')}"></head>
+<body><nav th:replace="~{fragments :: topbar}"></nav><div th:replace="~{fragments :: flash}"></div>
+<div class="d-flex gap-3 p-3"><aside class="side d-none d-md-block"><div class="lbl mb-2">Navigation</div><a class="on" href="#overview">Overview</a><a href="#carbon">Carbon &amp; Consumption</a><a href="#plant">Plantation Submissions</a><a th:href="@{/user/buy}">🛒 Buy Tree</a><a th:href="@{/user/orders}">My Orders</a></aside>
+<main class="flex-fill" id="overview">
+<div class="hero-card d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3"><div><span class="tag">GENERAL USER</span> <span class="tag">Eco Member</span>
+<h2 class="fw-bold mt-2 mb-0" th:text="${me.name}"></h2><small th:text="${me.email}+' • Verified User'"></small></div>
+<div class="d-flex gap-2"><a href="#plant" class="btn btn-eco">Submit Plantation</a><a href="#carbon" class="btn btn-light">Log Consumption</a></div></div>
+<div class="row g-3 mb-3">
+<div class="col-md-3"><div class="card-e"><div class="lbl">Estimated carbon footprint</div><div class="kpi" th:text="${total}">0</div><small>kg CO2e logged</small></div></div>
+<div class="col-md-3"><div class="card-e"><div class="lbl">Environmental impact</div><div class="kpi" th:text="${#numbers.formatDecimal(saved,1,0)}">0</div><small>kg CO2 saved (verified trees)</small></div></div>
+<div class="col-md-3"><div class="card-e"><div class="lbl">Green score</div><div class="kpi"><span th:text="${me.greenScore}"></span><small class="fs-6 text-muted"> / 1000</small></div><small th:text="'Rank #'+${rank}"></small></div></div>
+<div class="col-md-3"><div class="card-e"><div class="lbl">EcoPoints</div><div class="kpi" th:text="${me.ecoPoints}"></div><small>Awarded only after NGO verification</small></div></div></div>
+<div class="row g-3 mb-3" id="carbon"><div class="col-lg-8"><div class="card-e"><h5 class="fw-bold">Consumption Logs</h5><small class="text-muted">Track electricity, water, waste &amp; transportation usage to estimate carbon footprint</small>
+<div class="table-responsive mt-2"><table class="table align-middle"><thead><tr class="lbl"><th>ID</th><th>Category</th><th>Usage</th><th>Est. CO2e</th><th>Date</th></tr></thead><tbody>
+<tr th:each="l:${logs}"><td th:text="'REC-'+${#numbers.formatInteger(l.id,3)}"></td><td><span class="tag" th:text="${l.category}"></span></td><td th:text="${l.amount}"></td><td th:text="${l.co2}+' kg'"></td><td th:text="${#temporals.format(l.loggedAt,'d MMM yyyy, HH:mm')}"></td></tr>
+<tr th:if="${logs.isEmpty()}"><td colspan="5" class="text-muted">No records yet.</td></tr></tbody></table></div></div></div>
+<div class="col-lg-4"><div class="card-e"><h5 class="fw-bold">Log Consumption</h5><form th:action="@{/user/consumption}" method="post">
+<select name="category" class="form-select mb-2"><option value="ELECTRICITY">Electricity (kWh)</option><option value="WATER">Water (L)</option><option value="TRANSPORT">Transport (km)</option><option value="WASTE">Waste (kg)</option></select>
+<input name="amount" type="number" step="0.01" min="0.01" class="form-control mb-2" placeholder="Amount" required><button class="btn btn-eco w-100">Calculate &amp; Save</button></form></div></div></div>
+<div class="row g-3" id="plant"><div class="col-lg-8"><div class="card-e"><h5 class="fw-bold">Plantation Submissions &amp; Geolocation</h5>
+<div class="d-flex gap-3 border-bottom py-3" th:each="p:${plants}"><img class="thumb" th:if="${p.photoUrl}" th:src="@{${p.photoUrl}}"><div class="thumb d-flex align-items-center justify-content-center fs-1" th:unless="${p.photoUrl}">🌱</div>
+<div><small class="text-muted" th:text="'SUB-PLN-'+${#numbers.formatInteger(p.id,3)}"></small> <span class="tag" th:classappend="${p.status}" th:text="${p.status}"></span>
+<h6 class="fw-bold mt-1" th:text="${p.treeName}"></h6><small th:text="${p.location}+' • '+${p.plantedOn}"></small>
+<div class="small text-success" th:if="${p.status=='VERIFIED'}" th:text="'+'+${p.pointsAwarded}+' EcoPoints awarded'"></div><div class="small text-danger" th:if="${p.status=='REJECTED'}" th:text="'Reason: '+${p.rejectReason}"></div></div></div></div></div>
+<div class="col-lg-4"><div class="card-e mb-3"><h5 class="fw-bold">Submit Plantation</h5><form th:action="@{/user/plantation}" method="post" enctype="multipart/form-data">
+<input name="treeName" list="tl" class="form-control mb-2" placeholder="Tree / species" required><datalist id="tl"><option th:each="t:${trees}" th:value="${t.name}"></option></datalist>
+<input name="location" class="form-control mb-2" placeholder="Location" required><input name="plantedOn" type="date" class="form-control mb-2" required>
+<div class="d-flex gap-2 mb-2"><input name="lat" id="lat" type="number" step="any" class="form-control" placeholder="Lat"><input name="lng" id="lng" type="number" step="any" class="form-control" placeholder="Lng"></div>
+<button type="button" class="btn btn-sm btn-outline-success mb-2" onclick="navigator.geolocation.getCurrentPosition(p=>{lat.value=p.coords.latitude;lng.value=p.coords.longitude})">📍 Use my GPS</button>
+<input name="photo" type="file" accept="image/*" class="form-control mb-2" required><button class="btn btn-eco w-100">Submit for Verification</button></form></div>
+<div class="card-e mb-3"><h5 class="fw-bold">Earned Badges</h5><div th:each="b:${badges}" class="tag d-inline-block m-1 p-2" th:text="'🏅 '+${b}"></div><small class="text-muted" th:if="${badges.isEmpty()}">None yet.</small></div>
+<div class="card-e"><h5 class="fw-bold">Top Standings</h5><div class="d-flex justify-content-between small py-1" th:each="u,s:${board}"><span th:text="'#'+${s.count}+' '+${u.name}"></span><b th:text="${u.ecoPoints}+' pts'"></b></div></div></div></div>
+</main></div></body></html>
