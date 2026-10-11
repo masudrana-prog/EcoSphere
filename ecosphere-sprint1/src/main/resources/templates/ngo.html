@@ -1,0 +1,15 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('NGO Hub')}"></head>
+<body><nav th:replace="~{fragments :: topbar}"></nav><div th:replace="~{fragments :: flash}"></div>
+<div class="p-3 container-xl"><div class="hero-card mb-3"><h2 class="fw-bold mb-0" th:text="${me.name}"></h2><small th:text="${me.location}"></small></div>
+<div class="row g-3 mb-3"><div class="col-md-4"><div class="card-e"><div class="lbl">Awaiting audit</div><div class="kpi" th:text="${pending.size()}"></div></div></div>
+<div class="col-md-4"><div class="card-e"><div class="lbl">Total verified</div><div class="kpi" th:text="${verifiedCount}"></div></div></div>
+<div class="col-md-4"><div class="card-e"><div class="lbl">Reviewed logs</div><div class="kpi" th:text="${reviewed.size()}"></div></div></div></div>
+<div class="card-e mb-3"><h5 class="fw-bold">Plantation Verification — Action Required</h5>
+<div class="d-flex gap-3 border-bottom py-3 flex-wrap" th:each="p:${pending}"><img class="thumb" th:if="${p.photoUrl}" th:src="@{${p.photoUrl}}"><div class="thumb d-flex align-items-center justify-content-center fs-1" th:unless="${p.photoUrl}">🌱</div>
+<div class="flex-fill"><h6 class="fw-bold" th:text="${p.treeName}"></h6><small th:text="'Planter: '+${p.user.name}+' • '+${p.location}+' • Planted '+${p.plantedOn}"></small>
+<div class="small text-muted" th:if="${p.lat}" th:text="'GPS: '+${p.lat}+', '+${p.lng}"></div></div>
+<div class="d-flex gap-2 align-items-start"><form th:action="@{/ngo/{id}/approve(id=${p.id})}" method="post" onsubmit="return confirm('Approve and award EcoPoints?')"><button class="btn btn-eco btn-sm">Inspect &amp; Verify</button></form>
+<form th:action="@{/ngo/{id}/reject(id=${p.id})}" method="post" class="d-flex gap-1"><input name="reason" class="form-control form-control-sm" placeholder="Rejection reason" required><button class="btn btn-outline-danger btn-sm">Reject</button></form></div></div>
+<p class="text-muted mt-2" th:if="${pending.isEmpty()}">No pending submissions 🎉</p></div>
+<div class="card-e"><h5 class="fw-bold">Verification History</h5><table class="table small"><tr class="lbl"><th>Tree</th><th>Planter</th><th>Status</th><th>Note</th><th>Date</th></tr>
+<tr th:each="p:${reviewed}"><td th:text="${p.treeName}"></td><td th:text="${p.user.name}"></td><td><span class="tag" th:classappend="${p.status}" th:text="${p.status}"></span></td><td th:text="${p.status=='REJECTED'}?${p.rejectReason}:'+'+${p.pointsAwarded}+' pts'"></td><td th:text="${p.verifiedAt}?${#temporals.format(p.verifiedAt,'d MMM yyyy HH:mm')}"></td></tr></table></div></div></body></html>
