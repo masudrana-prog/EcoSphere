@@ -1,0 +1,9 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('My Orders')}"></head>
+<body><nav th:replace="~{fragments :: topbar}"></nav>
+<div class="p-3 container-xl"><div class="d-flex justify-content-between align-items-center mb-3"><h2 class="fw-bold mb-0">My Tree Orders</h2><a th:href="@{/user/buy}" class="btn btn-eco">🛒 Buy more trees</a></div>
+<div class="alert alert-success" th:if="${success}" th:text="${success}"></div><div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+<div class="card-e"><div class="table-responsive"><table class="table align-middle"><tr class="lbl"><th>Order</th><th>Tree</th><th>Nursery</th><th>Qty</th><th>Total</th><th>Payment</th><th>Placed</th><th>Status</th><th></th></tr>
+<tr th:each="o:${orders}"><td th:text="'#'+${o.id}"></td><td><b th:text="${o.tree.name}"></b></td><td th:text="${o.nursery.name}"></td><td th:text="${o.quantity}"></td><td th:text="'৳'+${o.total}"></td><td><span th:text="${o.paymentMethod=='BKASH'}?'bKash':'Cash on delivery'"></span><div class="small text-muted" th:if="${o.trxId}" th:text="'TrxID: '+${o.trxId}"></div></td><td th:text="${#temporals.format(o.createdAt,'d MMM yyyy, HH:mm')}"></td>
+<td><span class="tag" th:classappend="${o.status=='PENDING'}?'PENDING':(${o.status=='CANCELLED'}?'REJECTED':'')" th:text="${o.status}"></span></td>
+<td><form th:action="@{/user/orders/{id}/cancel(id=${o.id})}" method="post" th:if="${o.status=='PENDING'}" onsubmit="return confirm('Cancel this order?')"><button class="btn btn-sm btn-outline-danger">Cancel</button></form></td></tr>
+<tr th:if="${orders.isEmpty()}"><td colspan="9" class="text-muted">You haven't ordered any trees yet.</td></tr></table></div></div></div></body></html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Buy Tree')}"></head>
+<body><nav th:replace="~{fragments :: topbar}"></nav>
+<div class="p-3 container-xl">
+<div class="hero-card mb-3"><h2 class="fw-bold mb-1">🛒 Buy Tree</h2><p class="mb-0 text-muted">Order saplings directly from registered nurseries. Stock shown is live and is reserved when you place your order.</p></div>
+<div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+<form method="get" th:action="@{/user/buy}" class="card-e mb-3 py-3"><div class="row g-2">
+<div class="col-md-6"><input name="q" th:value="${q}" class="form-control" placeholder="Search by tree or scientific name..."></div>
+<div class="col-md-4"><select name="category" class="form-select"><option value="">All categories</option><option th:each="c:${categories}" th:value="${c}" th:text="${c}" th:selected="${c==category}"></option></select></div>
+<div class="col-md-2"><button class="btn btn-eco w-100">Search</button></div></div></form>
+<div class="row g-3"><div class="col-md-6 col-lg-4" th:each="t:${trees}"><div class="card-e d-flex flex-column">
+<div class="d-flex justify-content-between"><span class="tag" th:text="${t.category}"></span><span class="tag" th:classappend="${t.available}?'':'REJECTED'" th:text="${t.available}?'In stock':'Out of stock'"></span></div>
+<h5 class="fw-bold mt-2 mb-0" th:text="${t.name}"></h5><small class="text-muted fst-italic" th:text="${t.scientificName}"></small>
+<div class="small mt-2">🌿 <b th:text="${t.nursery.name}"></b><br><span class="text-muted" th:text="${t.nursery.location}"></span></div>
+<div class="d-flex justify-content-between align-items-end mt-auto pt-3"><div><div class="kpi fs-4" th:text="'৳'+${t.price}"></div><small class="text-muted" th:text="${t.quantity}+' available'"></small></div>
+<button type="button" class="btn btn-eco buy-btn" th:disabled="${!t.available}" data-bs-toggle="modal" data-bs-target="#buyModal"
+ th:attr="data-id=${t.id},data-name=${t.name},data-price=${t.price},data-max=${t.quantity},data-nphone=${t.nursery.phone},data-nname=${t.nursery.name}">Buy</button></div></div></div>
+<div class="col-12" th:if="${trees.isEmpty()}"><div class="card-e text-muted">No trees match your search.</div></div></div></div>
+<div class="modal fade" id="buyModal" tabindex="-1"><div class="modal-dialog"><form class="modal-content" method="post" id="buyForm" th:attr="data-base=@{/user/buy/}">
+<div class="modal-header"><h5 class="modal-title">Order <span id="mName"></span></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+<div class="modal-body"><label class="small fw-semibold">Quantity</label><input name="quantity" id="mQty" type="number" min="1" value="1" class="form-control mb-2" required>
+<div class="mb-2 fw-bold">Total: <span class="text-success" id="mTotal"></span></div>
+<label class="small fw-semibold">Delivery address</label><textarea name="address" class="form-control mb-2" rows="2" required></textarea>
+<label class="small fw-semibold">Contact phone</label><input name="phone" th:value="${me.phone}" class="form-control mb-2" required>
+<label class="small fw-semibold">Payment method</label><select name="payment" id="mPay" class="form-select"><option value="COD">Cash on delivery</option><option value="BKASH">bKash</option></select>
+<div id="bkBox" class="border rounded p-2 mt-2 d-none" style="background:#fdf2f8"><div class="small mb-2"><b>Pay with bKash:</b> use <i>Send Money</i> to <b id="mNphone"></b> (<span id="mNname"></span>) for <b id="mAmt"></b>, then enter your details below.</div>
+<input name="bkashSender" id="bkSender" class="form-control form-control-sm mb-2" placeholder="Your bKash number (01XXXXXXXXX)" disabled>
+<input name="trxId" id="bkTrx" class="form-control form-control-sm" placeholder="bKash Transaction ID (TrxID)" maxlength="20" disabled>
+<small class="text-muted">The nursery verifies the TrxID before confirming your order.</small></div>
+<small class="text-muted d-block mt-2" id="codNote">Cash on delivery: pay the nursery in cash when the trees arrive.</small></div>
+<div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button><button class="btn btn-eco">Place order</button></div></form></div></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>let price=0;const q=document.getElementById('mQty'),tot=document.getElementById('mTotal');
+const pay=document.getElementById('mPay'),bk=document.getElementById('bkBox'),bs=document.getElementById('bkSender'),bt=document.getElementById('bkTrx'),cod=document.getElementById('codNote');
+function upd(){const v='৳'+(Math.max(1,+q.value||1)*price).toFixed(2);tot.textContent=v;document.getElementById('mAmt').textContent=v;}
+function togglePay(){const on=pay.value==='BKASH';bk.classList.toggle('d-none',!on);cod.classList.toggle('d-none',on);bs.disabled=bt.disabled=!on;bs.required=bt.required=on;}
+pay.addEventListener('change',togglePay);
+document.querySelectorAll('.buy-btn').forEach(b=>b.addEventListener('click',()=>{price=+b.dataset.price;q.max=b.dataset.max;q.value=1;
+document.getElementById('mName').textContent=b.dataset.name;const f=document.getElementById('buyForm');f.action=f.dataset.base+b.dataset.id;document.getElementById('mNphone').textContent=b.dataset.nphone||'nursery contact number';document.getElementById('mNname').textContent=b.dataset.nname;pay.value='COD';bs.value=bt.value='';togglePay();upd();}));q.addEventListener('input',upd);</script></body></html>
