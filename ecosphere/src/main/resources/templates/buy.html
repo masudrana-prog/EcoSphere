@@ -16,6 +16,7 @@
  th:attr="data-id=${t.id},data-name=${t.name},data-price=${t.price},data-max=${t.quantity},data-nphone=${t.nursery.phone},data-nname=${t.nursery.name}">Buy</button></div></div></div>
 <div class="col-12" th:if="${trees.isEmpty()}"><div class="card-e text-muted">No trees match your search.</div></div></div></div>
 <div class="modal fade" id="buyModal" tabindex="-1"><div class="modal-dialog"><form class="modal-content" method="post" id="buyForm" th:attr="data-base=@{/user/buy/}">
+<input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 <div class="modal-header"><h5 class="modal-title">Order <span id="mName"></span></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
 <div class="modal-body"><label class="small fw-semibold">Quantity</label><input name="quantity" id="mQty" type="number" min="1" value="1" class="form-control mb-2" required>
 <div class="mb-2 fw-bold">Total: <span class="text-success" id="mTotal"></span></div>
